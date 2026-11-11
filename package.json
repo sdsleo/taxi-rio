@@ -1,0 +1,30 @@
+{
+  "name": "taxi-rio",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Plataforma de mobilidade urbana Taxi.Rio",
+  "workspaces": [
+    "packages/*",
+    "api",
+    "worker",
+    "ui"
+  ],
+  "scripts": {
+    "build": "npm run build --workspaces --if-present",
+    "typecheck": "npm run typecheck --workspaces --if-present",
+    "lint": "npm run lint --workspaces --if-present",
+    "format:check": "prettier --check \"**/*.{ts,tsx,js,json,md,yml,yaml}\"",
+    "format": "prettier --write \"**/*.{ts,tsx,js,json,md,yml,yaml}\"",
+    "test": "npm run test --workspaces --if-present",
+    "test:load": "k6 run loadtest/corridas-loadtest.js",
+    "test:load:docker": "docker run -i --rm --network host grafana/k6 run - < loadtest/corridas-loadtest.js",
+    "dev:api": "npm run dev --workspace=api",
+    "dev:worker": "npm run dev --workspace=worker",
+    "dev:ui": "npm run dev --workspace=ui"
+  },
+  "devDependencies": {
+    "@types/node": "^26.6.6",
+    "prettier": "^3.5.2",
+    "typescript": "^5.8.2"
+  }
+}

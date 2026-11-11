@@ -27,6 +27,7 @@ Este arquivo é a especificação mestre de governança para agentes de IA (**An
 Todo agente (Antigravity ou Claude Code) **DEVE** seguir rigorosamente este ciclo em qualquer intervenção:
 
 ### 2.1. Início da Tarefa (Obrigatório)
+
 1. Inspecione [`.agents/memory/current_task.md`](./.agents/memory/current_task.md) para identificar o escopo e o status ativo.
 2. Inspecione [`.agents/memory/memory.md`](./.agents/memory/memory.md) para absorver o contexto consolidado e restrições acumuladas.
 3. Leia as regras pertinentes ao escopo da tarefa em `.agents/rules/`:
@@ -38,6 +39,7 @@ Todo agente (Antigravity ou Claude Code) **DEVE** seguir rigorosamente este cicl
 4. Verifique as fronteiras da etapa atual em [`LIMITES.md`](./LIMITES.md). **Não invente requisitos não solicitados e não implemente regras de negócio antes da etapa correspondente.**
 
 ### 2.2. Durante a Execução
+
 1. Consulte os manuais em `.agents/skills/` para o procedimento adequado:
    - [`implement-feature`](./.agents/skills/implement-feature/SKILL.md)
    - [`review-code`](./.agents/skills/review-code/SKILL.md)
@@ -47,6 +49,7 @@ Todo agente (Antigravity ou Claude Code) **DEVE** seguir rigorosamente este cicl
 4. Registre ocorrências reais, bloqueios e fatos do desenvolvimento em [`DIARIO.md`](./DIARIO.md). **Não invente decisões, experiências ou fatos.**
 
 ### 2.3. Fim da Tarefa (Obrigatório)
+
 1. Realize uma revisão das atualizações necessárias em todos os arquivos de governança afetados.
 2. Atualize o progresso real no checklist de [`.agents/memory/current_task.md`](./.agents/memory/current_task.md).
 3. Se houver aprendizado persistente ou nova premissa consolidada, registre em [`.agents/memory/memory.md`](./.agents/memory/memory.md). **Atenção: Não atualize a memória com informações triviais, logs de depuração temporários ou detalhes operacionais descartáveis.**

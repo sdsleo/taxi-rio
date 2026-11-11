@@ -16,4 +16,4 @@ Checklist e critérios para avaliação sistemática de código no Taxi.Rio.
    - Todas as chamadas assíncronas contam com tratamento de erros adequado?
    - Mensagens de erro são informativas e livres de dados confidenciais?
 4. **Padrão de Mensagens**:
-   - Commits seguem o formato de *Conventional Commits*?
+   - Commits seguem o formato de _Conventional Commits_?

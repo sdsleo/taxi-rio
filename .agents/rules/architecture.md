@@ -40,6 +40,7 @@ Este documento documenta os limites, as responsabilidades e a topologia dos mód
 ---
 
 ## 3. Regras de Isolamento
+
 1. A `ui/` e a `api/` nunca compartilham dependências internas diretamente; o compartilhamento de código ocorre exclusivamente via `packages/shared/`.
 2. O `worker/` não expõe portas HTTP de atendimento a clientes.
 3. Não introduza ferramentas complexas de orquestração de monorepo prematuramente.

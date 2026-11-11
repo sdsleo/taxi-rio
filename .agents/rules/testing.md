@@ -18,5 +18,6 @@ Este documento define os padrões para validação automatizada de código e con
 ---
 
 ## 2. Boas Práticas
+
 - Nomenclatura descritiva de cenários no padrão: `deve [comportamento esperado] quando [condição]`.
 - Padrão estrutural `Arrange-Act-Assert` (AAA).

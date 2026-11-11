@@ -5,14 +5,16 @@ Este guia define as convenções de implementação, qualidade e estilo de códi
 ---
 
 ## 1. Padrões de TypeScript
+
 - **Compilação Estrita**: Obrigatório `strict: true`. O uso de `@ts-ignore` ou `@ts-nocheck` é proibido sem justificativa crítica formalmente documentada.
-- **Proibição de `any`**: O tipo `any` não deve ser utilizado. Utilize `unknown` acompanhado de validação de tipos (*type guards* ou asserções) para dados de entrada imprevisíveis.
+- **Proibição de `any`**: O tipo `any` não deve ser utilizado. Utilize `unknown` acompanhado de validação de tipos (_type guards_ ou asserções) para dados de entrada imprevisíveis.
 - **Tipagem Explícita**: Funções públicas, rotas de API e contratos de dados compartilhados devem declarar tipos de retorno e de argumentos explicitamente.
 - **Imutabilidade**: Utilize a diretiva `readonly` para propriedades imutáveis de contratos e objetos de domínio.
 
 ---
 
 ## 2. Nomenclatura e Convenções
+
 - **Arquivos**: `kebab-case.ts` ou `kebab-case.tsx`.
 - **Classes, Interfaces e Tipos**: `PascalCase`.
 - **Funções e Variáveis**: `camelCase`.
@@ -21,6 +23,7 @@ Este guia define as convenções de implementação, qualidade e estilo de códi
 ---
 
 ## 3. Gestão de Erros
+
 - Não silencie exceções com blocos `catch` vazios.
 - Trate ou propague erros com mensagens e códigos compreensíveis.
 - Não exponha stack traces ou dados sensíveis em respostas públicas de API.
@@ -28,6 +31,7 @@ Este guia define as convenções de implementação, qualidade e estilo de códi
 ---
 
 ## 4. Commits Convencionais
+
 - `feat`: nova funcionalidade
 - `fix`: correção de defeito
 - `docs`: alterações em documentação

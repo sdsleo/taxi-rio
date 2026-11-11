@@ -1,0 +1,75 @@
+name: Taxi.Rio CI
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  validate:
+    name: Lint, Typecheck e Testes
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout do Repositório
+        uses: actions/checkout@v4
+
+      - name: Configurar Node.js 22
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: 'npm'
+
+      - name: Instalar Dependências
+        run: npm ci
+
+      - name: Verificar Formatação (Prettier)
+        run: npm run format:check
+
+      - name: Verificar Tipagem Estrita (TypeScript)
+        run: npm run typecheck
+
+      - name: Executar Testes Automatizados (Jest)
+        run: npm test
+
+      - name: Compilar Monorepo (Build)
+        run: npm run build
+
+  docker-build:
+    name: Build das Imagens Docker
+    needs: validate
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout do Repositório
+        uses: actions/checkout@v4
+
+      - name: Configurar Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Build Imagem Docker - API
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          file: ./api/Dockerfile
+          push: false
+          tags: taxirio/api:ci
+
+      - name: Build Imagem Docker - Worker
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          file: ./worker/Dockerfile
+          push: false
+          tags: taxirio/worker:ci
+
+      - name: Build Imagem Docker - UI
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          file: ./ui/Dockerfile
+          push: false
+          tags: taxirio/ui:ci
