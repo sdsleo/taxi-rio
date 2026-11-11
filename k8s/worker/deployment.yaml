@@ -1,0 +1,95 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: taxi-rio-worker
+  namespace: taxi-rio
+  labels:
+    app.kubernetes.io/name: taxi-rio-worker
+    app.kubernetes.io/component: worker
+    app.kubernetes.io/part-of: taxi-rio-platform
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: taxi-rio-worker
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 0
+  template:
+    metadata:
+      labels:
+        app: taxi-rio-worker
+        app.kubernetes.io/name: taxi-rio-worker
+        app.kubernetes.io/component: worker
+    spec:
+      containers:
+        - name: worker
+          image: taxi-rio-worker:latest
+          imagePullPolicy: IfNotPresent
+          ports:
+            - name: metrics
+              containerPort: 3001
+              protocol: TCP
+          env:
+            - name: NODE_ENV
+              valueFrom:
+                configMapKeyRef:
+                  name: taxirio-config
+                  key: NODE_ENV
+            - name: METRICS_PORT
+              valueFrom:
+                configMapKeyRef:
+                  name: taxirio-config
+                  key: METRICS_PORT
+            - name: REDIS_HOST
+              valueFrom:
+                configMapKeyRef:
+                  name: taxirio-config
+                  key: REDIS_HOST
+            - name: REDIS_PORT
+              valueFrom:
+                configMapKeyRef:
+                  name: taxirio-config
+                  key: REDIS_PORT
+            - name: OTEL_EXPORTER_OTLP_ENDPOINT
+              valueFrom:
+                configMapKeyRef:
+                  name: taxirio-config
+                  key: OTEL_EXPORTER_OTLP_ENDPOINT
+            - name: OTEL_SERVICE_NAME
+              value: 'taxi-rio-worker'
+            - name: RABBITMQ_URL
+              valueFrom:
+                secretKeyRef:
+                  name: taxirio-secret
+                  key: RABBITMQ_URL
+            - name: MONGO_URI
+              valueFrom:
+                secretKeyRef:
+                  name: taxirio-secret
+                  key: MONGO_URI
+          resources:
+            requests:
+              cpu: 100m
+              memory: 128Mi
+            limits:
+              cpu: 500m
+              memory: 512Mi
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: 3001
+            initialDelaySeconds: 15
+            periodSeconds: 10
+            timeoutSeconds: 3
+            failureThreshold: 3
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: 3001
+            initialDelaySeconds: 10
+            periodSeconds: 5
+            timeoutSeconds: 2
+            failureThreshold: 2

@@ -1,0 +1,120 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: taxi-rio-api
+  namespace: taxi-rio
+  labels:
+    app.kubernetes.io/name: taxi-rio-api
+    app.kubernetes.io/component: api
+    app.kubernetes.io/part-of: taxi-rio-platform
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: taxi-rio-api
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 0
+  template:
+    metadata:
+      labels:
+        app: taxi-rio-api
+        app.kubernetes.io/name: taxi-rio-api
+        app.kubernetes.io/component: api
+    spec:
+      containers:
+        - name: api
+          image: taxi-rio-api:latest
+          imagePullPolicy: IfNotPresent
+          ports:
+            - name: http
+              containerPort: 3000
+              protocol: TCP
+          env:
+            - name: NODE_ENV
+              valueFrom:
+                configMapKeyRef:
+                  name: taxirio-config
+                  key: NODE_ENV
+            - name: PORT
+              valueFrom:
+                configMapKeyRef:
+                  name: taxirio-config
+                  key: PORT
+            - name: MYSQL_HOST
+              valueFrom:
+                configMapKeyRef:
+                  name: taxirio-config
+                  key: MYSQL_HOST
+            - name: MYSQL_PORT
+              valueFrom:
+                configMapKeyRef:
+                  name: taxirio-config
+                  key: MYSQL_PORT
+            - name: MYSQL_DATABASE
+              valueFrom:
+                configMapKeyRef:
+                  name: taxirio-config
+                  key: MYSQL_DATABASE
+            - name: REDIS_HOST
+              valueFrom:
+                configMapKeyRef:
+                  name: taxirio-config
+                  key: REDIS_HOST
+            - name: REDIS_PORT
+              valueFrom:
+                configMapKeyRef:
+                  name: taxirio-config
+                  key: REDIS_PORT
+            - name: OTEL_EXPORTER_OTLP_ENDPOINT
+              valueFrom:
+                configMapKeyRef:
+                  name: taxirio-config
+                  key: OTEL_EXPORTER_OTLP_ENDPOINT
+            - name: OTEL_SERVICE_NAME
+              value: 'taxi-rio-api'
+            - name: JWT_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: taxirio-secret
+                  key: JWT_SECRET
+            - name: MYSQL_USER
+              valueFrom:
+                secretKeyRef:
+                  name: taxirio-secret
+                  key: MYSQL_USER
+            - name: MYSQL_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: taxirio-secret
+                  key: MYSQL_PASSWORD
+            - name: RABBITMQ_URL
+              valueFrom:
+                secretKeyRef:
+                  name: taxirio-secret
+                  key: RABBITMQ_URL
+          resources:
+            requests:
+              cpu: 100m
+              memory: 128Mi
+            limits:
+              cpu: 500m
+              memory: 512Mi
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: 3000
+            initialDelaySeconds: 15
+            periodSeconds: 10
+            timeoutSeconds: 3
+            failureThreshold: 3
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: 3000
+            initialDelaySeconds: 10
+            periodSeconds: 5
+            timeoutSeconds: 2
+            failureThreshold: 2

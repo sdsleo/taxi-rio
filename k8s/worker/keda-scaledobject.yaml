@@ -1,0 +1,46 @@
+apiVersion: keda.sh/v1alpha1
+kind: TriggerAuthentication
+metadata:
+  name: keda-rabbitmq-auth
+  namespace: taxi-rio
+  labels:
+    app.kubernetes.io/name: taxi-rio-worker
+    app.kubernetes.io/part-of: taxi-rio-platform
+spec:
+  secretTargetRef:
+    - parameter: host
+      name: taxirio-secret
+      key: RABBITMQ_URL
+---
+apiVersion: keda.sh/v1alpha1
+kind: ScaledObject
+metadata:
+  name: taxi-rio-worker-scaler
+  namespace: taxi-rio
+  labels:
+    app.kubernetes.io/name: taxi-rio-worker
+    app.kubernetes.io/part-of: taxi-rio-platform
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: taxi-rio-worker
+  minReplicaCount: 1
+  maxReplicaCount: 10
+  pollingInterval: 15
+  cooldownPeriod: 60
+  advanced:
+    restoreToOriginalReplicaCount: true
+    horizontalPodAutoscalerConfig:
+      behavior:
+        scaleDown:
+          stabilizationWindowSeconds: 60
+  triggers:
+    - type: rabbitmq
+      metadata:
+        protocol: amqp
+        queueName: taxirio.corridas.queue
+        mode: QueueLength
+        value: '20'
+      authenticationRef:
+        name: keda-rabbitmq-auth

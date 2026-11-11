@@ -1,0 +1,19 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+namespace: taxi-rio
+
+resources:
+  - namespace.yaml
+  - configmap.yaml
+  - secret.yaml
+  - api/deployment.yaml
+  - api/service.yaml
+  - worker/deployment.yaml
+  - worker/service.yaml
+  - worker/keda-scaledobject.yaml
+  - ui/deployment.yaml
+  - ui/service.yaml
+
+commonLabels:
+  app.kubernetes.io/part-of: taxi-rio-platform

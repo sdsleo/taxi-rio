@@ -1,0 +1,22 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: worker
+  namespace: taxi-rio
+  labels:
+    app.kubernetes.io/name: taxi-rio-worker
+    app.kubernetes.io/component: worker
+    app.kubernetes.io/part-of: taxi-rio-platform
+  annotations:
+    prometheus.io/scrape: 'true'
+    prometheus.io/port: '3001'
+    prometheus.io/path: '/metrics'
+spec:
+  type: ClusterIP
+  selector:
+    app: taxi-rio-worker
+  ports:
+    - name: metrics
+      port: 3001
+      targetPort: 3001
+      protocol: TCP
