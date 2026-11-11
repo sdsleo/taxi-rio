@@ -1,0 +1,37 @@
+apiVersion: monitoring.coreos.com/v1
+kind: PrometheusRule
+metadata:
+  name: taxi-rio-prometheus-rules
+  namespace: taxi-rio
+  labels:
+    app.kubernetes.io/name: taxi-rio
+    app.kubernetes.io/part-of: taxi-rio
+    prometheus: k8s
+    role: alert-rules
+spec:
+  groups:
+    - name: taxi-rio.rules
+      rules:
+        - alert: HighErrorRate
+          expr: (sum(rate(http_requests_total{status_code=~"5.."}[5m])) / sum(rate(http_requests_total[5m]))) > 0.05
+          for: 2m
+          labels:
+            severity: critical
+            service: taxi-rio-api
+          annotations:
+            summary: 'Taxa elevada de erros 5xx na API Taxi.Rio'
+            description: 'A proporcao de erros internos 5xx ultrapassou 5% do tráfego total nos últimos 5 minutos (valor: {{ $value }}).'
+            impact: 'Degradação da experiência dos passageiros e motoristas no agendamento de corridas.'
+            action: 'Verificar logs da API via JSON e checar conectividade com MySQL e Redis.'
+
+        - alert: RabbitMQQueueBacklogHigh
+          expr: rabbitmq_queue_messages{queue="taxirio.corridas.queue"} > 100
+          for: 2m
+          labels:
+            severity: warning
+            service: taxi-rio-worker
+          annotations:
+            summary: 'Acúmulo de mensagens na fila RabbitMQ do Taxi.Rio'
+            description: 'A fila taxirio.corridas.queue possui mais de 100 mensagens pendentes por mais de 2 minutos (valor: {{ $value }} msgs).'
+            impact: 'Atraso na atualização de status em cache e auditoria de corridas no MongoDB.'
+            action: 'Verificar status do Worker, latência de escrita no MongoDB ou escalar réplicas do Worker.'
